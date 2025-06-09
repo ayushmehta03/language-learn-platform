@@ -135,12 +135,17 @@ export async function onboard(req,res){
     ...req.body,
     isOnboarded:true,
   },{new:true})
-  if(!updatedUser){
-    return res.status(404).json({
-        message:"User not found"
-        
-    })
-  }
+  if(!updatedUser) return res.status(404).json({message:"User not found" });
+ try{
+  await upssertStreamUser({
+    id:updatedUser._id.toString(),
+    name:updatedUser.fullName,
+    image:updatedUser.profilepic || "",
+ })
+} catch(streamError){
+ console.log("Stream ERROR");
+}
+  
   res.status(200).json({
     success:true,
     user:updatedUser
