@@ -46,11 +46,7 @@ const userSchema= new mongoose.Schema({
 
 
 },{timestamps:true})
- const User= mongoose.model("User",userSchema);
-   
 
-
-// Middleware to run before user is saved 
 userSchema.pre("save", async function(next){
     if(!this.isModified("password")) return next();
     try{
@@ -62,6 +58,23 @@ userSchema.pre("save", async function(next){
         next(error);
     }
 })
+
+
+userSchema.methods.matchPassword= async function (enteredPassword) {
+    const ispasswordCorrect= await bcrypt.compare(enteredPassword,this.password);
+    return ispasswordCorrect;
+}
+
+
+
+
+
+ const User= mongoose.model("User",userSchema);
+   
+
+
+// Middleware to run before user is saved 
+
 
 
 
