@@ -1,3 +1,4 @@
+import { upssertStreamUser } from "../lib/stream.js";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken"
 
@@ -19,7 +20,7 @@ export async function signup(req,res){
 if (!emailRegex.test(email)) {
   return res.status(400).json({ message: "Invalid email format" });
 }
-   
+
 const existingUser=User.findOne({email});
 if(existingUser){
     res.status(400).json({
@@ -35,8 +36,16 @@ if(existingUser){
     profilepic:randomAvatar,
  })
 
-
-
+ try{
+ await upssertStreamUser({
+    id:newUser._id.toString(),
+    name: newUser.fullName,
+    image:newUser.profilepic || "",
+ });
+ console.log(`stream user created for ${newUser.fullName}`);
+ } catch(error){
+    console.log("Error Creating STream User")
+ }
 
 
 
@@ -111,4 +120,33 @@ export function logout(req,res){
         message:"Log Out Successfull"
     });
     
+}
+export async function onboard(req,res){
+ try{
+    const userId= req.user._id;
+    const{fullName,bio,nativeLanguage,learningLanguage,location}=req.body;
+    if(!fullName || !bio || !nativeLanguage || !learningLanguage ||!location){
+        return res.status(400).json({
+            message:"All fileds are required",
+            
+        })
+    }
+   const updatedUser=await User.findByIdAndUpdate(userId,{
+    ...req.body,
+    isOnboarded:true,
+  },{new:true})
+  if(!updatedUser){
+    return res.status(404).json({
+        message:"User not found"
+        
+    })
+  }
+  res.status(200).json({
+    success:true,
+    user:updatedUser
+  });
+ } catch(error){
+res.status(500).json({message:"Internal Server Error"})
+console.log(error)
+ }
 }
