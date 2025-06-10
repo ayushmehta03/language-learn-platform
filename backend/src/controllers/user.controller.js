@@ -81,3 +81,72 @@ export async function sendFriendRequest(req,res){
         })
     }
 }
+
+export async function acceptFriendRequest(req,res){
+    try{
+        const {id:requestId}=req.params;
+        const friendRequest=await FriendRequest.findById(requestId);
+        if(!friendRequest) return res.status(404).json({
+            message:"Friend Request doesn't exists"
+        });
+        if(friendRequest.recipient.toString()!=req.user.id){
+            return res.status(403).json({
+                message:"You are not authoriazed to accept this request"
+            })
+        }
+        friendRequest.status="accepted"
+        await friendRequest.save();
+        // add each user to the others friend array
+        await User.findByIdAndUpdate(friendRequest.sender,{
+            $addToSet:{friends:friendRequest.recipient},
+        })
+        await User.findByIdAndUpdate(friendRequest.recipient,{
+            $addToSet:{friends:friendRequest.sender}
+        })
+        res.status(200).json({
+            message:"Friend Request Accepetd"
+        })
+    }catch(error){
+        res.status(500).json({
+            message:"Internal Server Error"
+        })
+
+    }
+}
+
+export async function getFriendRequet(req,res){
+    try{
+    const incomingRequest= await FriendRequest.find({
+        recipient:req.user.id,
+        status:"pending"
+    }).populate("sender", "fullName profilePic nativeLanguage learningLanguage")
+    
+    const accepetedReqs= await FriendRequest.find({
+        sender:req.user.id,
+        status:"accepetd"
+
+    }).populate("recipient","fullName profilePic")
+    
+    res.status(200).json(incomingRequest,accepetedReqs)
+}
+    
+    catch(error){
+        res.status(500).json({
+            message:"Internal Server Error"
+        })
+    }
+}
+export async function getOutgoingFrirendReqs(req,res){
+    try{
+        const outgoingRequests=await FriendRequest.find({
+            sender:req.user.id,
+            status:"pending",
+        }).populate("recipient","fullName profilePic nativeLearning learningLanguage")
+     res.status(200).json(outgoingRequests)
+    }catch(error)
+    {
+        res.status(500).json({
+            message:"Internal server error "
+        })
+    }
+}
