@@ -36,6 +36,10 @@ if(existingUser){
     profilepic:randomAvatar,
  })
 
+
+// Upstream Auth PArt
+
+
  try{
  await upssertStreamUser({
     id:newUser._id.toString(),
