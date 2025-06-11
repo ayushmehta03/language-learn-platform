@@ -1,4 +1,4 @@
-import { Routes,Route } from 'react-router'
+import { Routes,Route, Navigate } from 'react-router'
 import Home from './pages/Home'
 import SignUp from './pages/SignUp'
 import LoginPage from './pages/LoginPage'
@@ -10,8 +10,8 @@ import { Toaster } from 'react-hot-toast'
 import { useQuery} from '@tanstack/react-query'
 import { axiosInstance } from './lib/axios'
 const App = () => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['todos'],
+  const { data:authData, isLoading, error } = useQuery({
+    queryKey: ['authUser'],
     queryFn: async () => {
       const res = await axiosInstance.get('/auth/me');
       return res.data;
@@ -19,18 +19,17 @@ const App = () => {
     retry: false
   });
 
-  console.log({ data });
-
+const authUser=authData?.user
   return (
     <div data-theme="night">
       <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/signup' element={<SignUp />} />
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/notifications' element={<Notification />} />
-        <Route path='/onboarding' element={<Onboarding />} />
-        <Route path='/chat' element={<ChatPage />} />
-        <Route path='/call' element={<CallPage />} />
+        <Route path='/' element={authUser?<Home />: <Navigate to='/login' />} />
+        <Route path='/signup' element={!authUser?<SignUp />: <Navigate to='/' />} />
+        <Route path='/login' element={!authUser? <LoginPage />:<Navigate to='/' />} />
+        <Route path='/notifications' element={ authUser?  <Notification />:<Navigate to='/login' />} />
+        <Route path='/onboarding' element={  authUser? <Onboarding />:  <Navigate to='/login' />} />
+        <Route path='/chat' element={  authUser? <ChatPage />:<Navigate to='/login' />} />
+        <Route path='/call' element={ authUser?   <CallPage />:<Navigate to='/login' />} />
       </Routes>
       <Toaster />
     </div>
