@@ -1,7 +1,27 @@
 import { ShipWheelIcon } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router";
+import{useMutation, useQueryClient} from "@tanstack/react-query"
+import { axiosInstance } from "../lib/axios";
 Link
 const SignUpPage = () => {
+  const[signupData,setsignupData]=useState({
+    fullName:"",
+    email:"",
+    password:"",
+  })
+  const queryClient= useQueryClient();
+  const {mutate,isPending,error}=useMutation({
+    mutationFn:async ()=>{
+      const response= await axiosInstance.post("/auth/signup",signupData)
+      return response.data
+    },
+    onSuccess:()=>queryClient.invalidateQueries({queryKey:["authUser"]})
+  })
+  const handleSignup=(e)=>{
+    e.preventDefault();
+    mutate();
+  }
   return (
     <div
       className="h-screen flex items-center justify-center p-4 sm:p-6 md:p-8"
@@ -19,7 +39,7 @@ const SignUpPage = () => {
           </div>
 
           <div className="w-full">
-            <form>
+            <form onSubmit={handleSignup}>
               <div className="space-y-4">
                 <div>
                   <h2 className="text-xl font-semibold">Create an Account</h2>
@@ -38,6 +58,9 @@ const SignUpPage = () => {
                       type="text"
                       placeholder="John Doe"
                       className="input input-bordered w-full"
+                      value={signupData.fullName}
+                      onChange={(e)=>setsignupData({...signupData,fullName:e.target.value})}
+                      
                       required
                     />
                   </div>
@@ -51,6 +74,10 @@ const SignUpPage = () => {
                       type="email"
                       placeholder="john@gmail.com"
                       className="input input-bordered w-full"
+                     value={signupData.email}
+                     onChange={(e)=>setsignupData({...signupData,email:e.target.value})}
+
+                     
                       required
                     />
                   </div>
@@ -64,6 +91,9 @@ const SignUpPage = () => {
                       type="password"
                       placeholder="********"
                       className="input input-bordered w-full"
+                     value={signupData.password}
+                     onChange={(e)=>setsignupData({...signupData,password:e.target.value})}
+                     
                       required
                     />
                     <p className="text-xs opacity-70 mt-1">
@@ -86,7 +116,7 @@ const SignUpPage = () => {
 
                 {/* SUBMIT BUTTON */}
                 <button className="btn btn-primary w-full" type="submit">
-                  Create Account
+               {isPending?"Signing Up...":"Create Account"}
                 </button>
 
                 {/* LINK TO LOGIN */}
@@ -103,7 +133,6 @@ const SignUpPage = () => {
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
         <div className="hidden lg:flex w-full lg:w-1/2 bg-primary/10 items-center justify-center">
           <div className="max-w-md p-8">
             {/* Illustration */}
