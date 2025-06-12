@@ -37,6 +37,8 @@ export async function signup(req, res) {
       fullName,
       password,
       profilepic: randomAvatar,
+    
+
     });
 
     // 🛠️ Optional: Handle stream creation gracefully
