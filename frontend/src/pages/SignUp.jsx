@@ -1,25 +1,28 @@
 import { ShipWheelIcon } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router";
-import{useMutation, useQueryClient} from "@tanstack/react-query"
-import { axiosInstance } from "../lib/axios";
+import { Link } from "react-router"; // ✅ Corrected import
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { signup } from "../lib/api";
-Link
+import { useState } from "react";
+
 const SignUpPage = () => {
-  const[signupData,setsignupData]=useState({
-    fullName:"",
-    email:"",
-    password:"",
-  })
-  const queryClient= useQueryClient();
-  const {mutate,isPending,error}=useMutation({
-    mutationFn:signup,
-    onSuccess:()=>queryClient.invalidateQueries({queryKey:["authUser"]})
-  })
-  const handleSignup=(e)=>{
+  const [signupData, setSignupData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: signup,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+  });
+
+  const handleSignup = (e) => {
     e.preventDefault();
     mutate(signupData);
-  }
+  };
+
   return (
     <div
       className="h-screen flex items-center justify-center p-4 sm:p-6 md:p-8"
@@ -35,15 +38,15 @@ const SignUpPage = () => {
               Streamify
             </span>
           </div>
-            // ERROR MESSAGE 
-        {error && (
-          <div className="alert alert-error mb-4">
-            <span>{error.response.data.message}</span>
-          </div>
-        ) }
 
+          {/* ERROR MESSAGE */}
+          {error && (
+            <div className="alert alert-error mb-4">
+              <span>{error.response?.data?.message || "Signup failed"}</span>
+            </div>
+          )}
 
-
+          {/* FORM */}
           <div className="w-full">
             <form onSubmit={handleSignup}>
               <div className="space-y-4">
@@ -55,7 +58,7 @@ const SignUpPage = () => {
                 </div>
 
                 <div className="space-y-3">
-                  {/* FULLNAME */}
+                  {/* FULL NAME */}
                   <div className="form-control w-full">
                     <label className="label">
                       <span className="label-text">Full Name</span>
@@ -65,8 +68,9 @@ const SignUpPage = () => {
                       placeholder="John Doe"
                       className="input input-bordered w-full"
                       value={signupData.fullName}
-                      onChange={(e)=>setsignupData({...signupData,fullName:e.target.value})}
-                      
+                      onChange={(e) =>
+                        setSignupData({ ...signupData, fullName: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -80,10 +84,10 @@ const SignUpPage = () => {
                       type="email"
                       placeholder="john@gmail.com"
                       className="input input-bordered w-full"
-                     value={signupData.email}
-                     onChange={(e)=>setsignupData({...signupData,email:e.target.value})}
-
-                     
+                      value={signupData.email}
+                      onChange={(e) =>
+                        setSignupData({ ...signupData, email: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -97,9 +101,10 @@ const SignUpPage = () => {
                       type="password"
                       placeholder="********"
                       className="input input-bordered w-full"
-                     value={signupData.password}
-                     onChange={(e)=>setsignupData({...signupData,password:e.target.value})}
-                     
+                      value={signupData.password}
+                      onChange={(e) =>
+                        setSignupData({ ...signupData, password: e.target.value })
+                      }
                       required
                     />
                     <p className="text-xs opacity-70 mt-1">
@@ -122,14 +127,14 @@ const SignUpPage = () => {
 
                 {/* SUBMIT BUTTON */}
                 <button className="btn btn-primary w-full" type="submit">
-               {isPending?(
-                <>
-                <span className="loading loading-spinner loading-xs"></span>
-               Loading...
-                </>
-               ):(
-                "Create Acccount "
-               )}
+                  {isPending ? (
+                    <>
+                      <span className="loading loading-spinner loading-xs"></span>
+                      Loading...
+                    </>
+                  ) : (
+                    "Create Account"
+                  )}
                 </button>
 
                 {/* LINK TO LOGIN */}
@@ -146,15 +151,17 @@ const SignUpPage = () => {
           </div>
         </div>
 
+        {/* RIGHT SIDE ILLUSTRATION */}
         <div className="hidden lg:flex w-full lg:w-1/2 bg-primary/10 items-center justify-center">
           <div className="max-w-md p-8">
-            {/* Illustration */}
             <div className="relative aspect-square max-w-sm mx-auto">
               <img src="/1.png" alt="Language connection illustration" className="w-full h-full" />
             </div>
 
             <div className="text-center space-y-3 mt-6">
-              <h2 className="text-xl font-semibold">Connect with language partners worldwide</h2>
+              <h2 className="text-xl font-semibold">
+                Connect with language partners worldwide
+              </h2>
               <p className="opacity-70">
                 Practice conversations, make friends, and improve your language skills together
               </p>
