@@ -1,28 +1,16 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import App from './App.jsx';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "stream-chat-react/dist/css/v2/index.css";
+import "./index.css";
+import App from "./App.jsx";
 
-// Create a new QueryClient instance with default options
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      refetchOnWindowFocus: false, // Don't refetch on window focus by default
-      retry: 3, // Retry failed queries 3 times
-      // ...other default query options
-    },
-    mutations: {
-      
-    },
-  },
-});
+import { BrowserRouter } from "react-router";
 
-const root = createRoot(document.getElementById('root'));
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-root.render(
+const queryClient = new QueryClient();
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
