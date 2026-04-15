@@ -4,6 +4,9 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 import { connectDB } from "./lib/db.js";
+import authRoutes from "./routes/auth.routes.js";
+import chatRoutes from "./routes/chat.routes.js";
+import userRoutes from "./routes/user.routes.js";
 const app = express();
 const PORT = process.env.PORT || 5400;
 
