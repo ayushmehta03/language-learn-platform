@@ -55,13 +55,13 @@ const OnboardingPage = () => {
     onboardingMutation(formState);
   };
 
-  const handleRandomAvatar = () => {
-    const idx = Math.floor(Math.random() * 100) + 1;
-    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
-    setFormState({ ...formState, profilePic: randomAvatar });
-    toast.success("Random profile picture generated!");
-  };
-
+const handleRandomAvatar = () => {
+  const seed = Math.random().toString(36).substring(7);
+  const randomAvatar = `https://api.dicebear.com/9.x/adventurer/svg?seed=${seed}`;
+  
+  setFormState({ ...formState, profilePic: randomAvatar });
+  toast.success("Random profile picture generated!");
+};
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
