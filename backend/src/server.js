@@ -4,9 +4,11 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 import { connectDB } from "./lib/db.js";
+
 import authRoutes from "./routes/auth.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
 import userRoutes from "./routes/user.routes.js";
+
 const app = express();
 const PORT = process.env.PORT || 5400;
 
@@ -18,6 +20,10 @@ app.use(cookieParser());
 if (process.env.NODE_ENV !== "production") {
     app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 }
+
+app.use("/api/auth", authRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/users", userRoutes);
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "frontend/dist")));
